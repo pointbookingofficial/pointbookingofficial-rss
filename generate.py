@@ -44,12 +44,48 @@ def clean_html(value):
 
 
 def enlarge_image(url):
-    """Ask Blogger/Google for a large version of an image."""
-    url = re.sub(r"/s\d+(-[a-z]+)*/", "/s1200/", url)
-    url = re.sub(r"/w\d+-h\d+(-[a-z]+)*/", "/s1200/", url)
-    url = re.sub(r"=s\d+(-[a-z]+)*$", "=s1200", url)
-    url = re.sub(r"=w\d+-h\d+(-[a-z]+)*$", "=s1200", url)
+    """Ask Blogger/Google for a large (1200px) version of an image."""
+    url = re.sub(r"/s\d+(?:-[a-z]*\d*)*/", "/s1200/", url)
+    url = re.sub(r"/w\d+-h\d+(?:-[a-z]+)*/", "/s1200/", url)
+    url = re.sub(r"=s\d+(?:-[a-z]*\d*)*$", "=s1200", url)
+    url = re.sub(r"=w\d+-h\d+(?:-[a-z]+)*$", "=s1200", url)
     return url
+
+
+def resize_image(url, size):
+    """Turn a normalized /s1200/ (or =s1200) URL into another size."""
+    if "/s1200/" in url:
+        return url.replace("/s1200/", f"/s{size}/")
+    return re.sub(r"=s1200$", f"=s{size}", url)
+
+
+def is_resizable(url):
+    return "/s1200/" in url or url.endswith("=s1200")
+
+
+CARD_SIZES = "(max-width: 640px) 100vw, (max-width: 900px) 50vw, 360px"
+FEATURED_SIZES = "(max-width: 640px) 100vw, 600px"
+
+
+def build_image_html(url, featured=False):
+    """<img> with srcset so the browser picks the sharpest size it needs."""
+    if not url:
+        return '<div class="thumb-fallback" aria-hidden="true"></div>'
+
+    safe = lambda value: html.escape(value, quote=True)
+    loading = 'loading="eager" fetchpriority="high"' if featured else 'loading="lazy"'
+
+    if not is_resizable(url):
+        return f'<img src="{safe(url)}" alt="" {loading}>'
+
+    sizes = FEATURED_SIZES if featured else CARD_SIZES
+    srcset = ", ".join(
+        f"{safe(resize_image(url, w))} {w}w" for w in (480, 800, 1200)
+    )
+    return (
+        f'<img src="{safe(resize_image(url, 800))}" srcset="{srcset}" '
+        f'sizes="{sizes}" alt="" decoding="async" {loading}>'
+    )
 
 
 def get_image(item):
@@ -78,6 +114,7 @@ def get_image(item):
                 return enlarge_image(url)
 
     return ""
+
 
 def get_text(item, tag):
     element = item.find(tag)
@@ -155,18 +192,12 @@ def fetch_rss():
 def generate_html(items):
     cards = []
 
-    for item in items:
+    for index, item in enumerate(items):
         title = html.escape(item["title"])
         link = html.escape(item["link"], quote=True)
         description = html.escape(item["description"])
         pub_date = html.escape(format_date(item["pub_date"]))
-        image = html.escape(item["image"], quote=True)
-
-        image_html = (
-            f'<img src="{image}" alt="" loading="lazy">'
-            if image
-            else '<div class="thumb-fallback" aria-hidden="true"></div>'
-        )
+        image_html = build_image_html(item["image"], featured=(index == 0))
 
         cards.append(f"""
         <article class="post">
