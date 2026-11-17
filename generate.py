@@ -217,32 +217,33 @@ def generate_html(items):
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>{html.escape(SITE_TITLE)}</title>
-
 <meta name="description" content="Book The Point Da Nang Villa at BRG Golf Resort. Enjoy a luxury 3-bedroom private pool villa with golf views, a spacious garden and full amenities.">
-
 <meta name="keywords" content="Point Booking Official, Point Booking, The Point Da Nang, The Point Villa Da Nang, The Point Da Nang Villa, Da Nang private pool villa, luxury villa Da Nang, 3 bedroom villa Da Nang, BRG Golf Villa Da Nang, Da Nang golf view villa, villa near Hoi An, Da Nang holiday villa, private pool villa Vietnam">
-
 <meta name="robots" content="index,follow">
-
-<link rel="icon" type="image/png" href="./public/Point%20180x180.png">
-<link rel="shortcut icon" type="image/png" href="./public/Point%20180x180.png">
-
+<meta content='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w144-h144-p-k-no-nu/favicon-96x96.png' name='msapplication-TileImage'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w57-h57-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='57x57'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w60-h60-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='60x60'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w72-h72-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='72x72'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w76-h76-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='76x76'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w114-h114-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='114x114'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w120-h120-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='120x120'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w144-h144-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='144x144'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w152-h152-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='152x152'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w180-h180-p-k-no-nu/favicon-96x96.png' rel='apple-touch-icon' sizes='180x180'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w16-h16-p-k-no-nu/favicon-96x96.png' rel='icon' sizes='16x16' type='image/png'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w32-h32-p-k-no-nu/favicon-96x96.png' rel='icon' sizes='32x32' type='image/png'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w96-h96-p-k-no-nu/favicon-96x96.png' rel='icon' sizes='96x96' type='image/png'/>
+<link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w192-h192-p-k-no-nu/favicon-96x96.png' rel='icon' sizes='192x192' type='image/png'/>
 <meta name="google-site-verification" content="bJxp2sUJpg6xYiP4iKCx1lrVhShclRgFq_LDPAol3d0">
-
 <link rel="alternate" type="application/rss+xml"
       title="Point Booking RSS"
       href="https://pointbookingofficial.github.io/pointbookingofficial-rss/feed.xml">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="{html.escape(SITE_TITLE)}">
