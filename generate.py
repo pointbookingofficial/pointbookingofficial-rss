@@ -143,27 +143,27 @@ def generate_html(items):
         image = html.escape(item["image"], quote=True)
 
         image_html = (
-            f'<img src="{image}" alt="{title}" loading="lazy">'
-            if image else ""
+            f'<img src="{image}" alt="" loading="lazy">'
+            if image
+            else '<div class="thumb-fallback" aria-hidden="true"></div>'
         )
 
         cards.append(f"""
         <article class="post">
-            {image_html}
+            <a class="thumb" href="{link}" target="_blank" rel="noopener"
+               tabindex="-1" aria-hidden="true">{image_html}</a>
             <div class="post-content">
-                <p class="date">{pub_date}</p>
+                <time class="date">{pub_date}</time>
                 <h2><a href="{link}" target="_blank" rel="noopener">{title}</a></h2>
-                <p>{description}</p>
-                <a class="read-more" href="{link}" target="_blank" rel="noopener">
-                    Read article →
-                </a>
+                <p class="summary">{description}</p>
+                <a class="read-more" href="{link}" target="_blank" rel="noopener">Đọc tiếp</a>
             </div>
         </article>
         """)
 
     updated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     
-return f"""<!DOCTYPE html>
+    return f"""<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
