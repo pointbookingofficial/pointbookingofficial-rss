@@ -217,16 +217,49 @@ def generate_html(items):
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>{html.escape(SITE_TITLE)}</title>
-<meta name="description" content="{html.escape(SITE_DESCRIPTION)}">
+
+<meta name="description" content="Book The Point Da Nang Villa at BRG Golf Resort. Enjoy a luxury 3-bedroom private pool villa with golf views, a spacious garden and full amenities.">
+
+<meta name="keywords" content="Point Booking Official, Point Booking, The Point Da Nang, The Point Villa Da Nang, The Point Da Nang Villa, Da Nang private pool villa, luxury villa Da Nang, 3 bedroom villa Da Nang, BRG Golf Villa Da Nang, Da Nang golf view villa, villa near Hoi An, Da Nang holiday villa, private pool villa Vietnam">
+
 <meta name="robots" content="index,follow">
+
+<link rel="icon" type="image/png" href="./Point 180x180.png">
+<link rel="shortcut icon" href="./Point 180x180.png">
+
+<meta name="google-site-verification" content="bJxp2sUJpg6xYiP4iKCx1lrVhShclRgFq_LDPAol3d0">
+
 <link rel="alternate" type="application/rss+xml"
-      title="Point Booking RSS" href="./feed.xml">
+      title="Point Booking RSS"
+      href="https://pointbookingofficial.github.io/pointbookingofficial-rss/feed.xml">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="{html.escape(SITE_TITLE)}">
+<meta property="og:description" content="Book The Point Da Nang Villa at BRG Golf Resort. Enjoy a luxury 3-bedroom private pool villa with golf views and full amenities.">
+<meta property="og:url" content="https://pointbookingofficial.github.io/pointbookingofficial-rss/">
+<meta property="og:image" content="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgV5Jj_Dw-VTXQwfVe-n82-0TYCthcyYYYZAP5ZMPsr1VY8nUE_g_8QLep32lngkcjW114cOvv7pmIn4Gii8ozXfgaTpVIwN8hha2Yeim_6OeuBhPiivzAWdyfGUPOzL3qqskiSIC29kbsbHDzSvTT6Q51t0hui_UhSon6njsHCKtWNxKPwvaXxp0qaMDKB/w1280-h720-p-k-no-nu/meta-image.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{html.escape(SITE_TITLE)}">
+<meta name="twitter:description" content="Discover The Point Da Nang Villa, a luxury 3-bedroom private pool villa at BRG Golf Resort.">
+<meta name="twitter:image" content="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgV5Jj_Dw-VTXQwfVe-n82-0TYCthcyYYYZAP5ZMPsr1VY8nUE_g_8QLep32lngcjW114cOvv7pmIn4Gii8ozXfgaTpVIwN8hha2Yeim_6OeuBhPiivzAWdyfGUPOzL3qqskiSIC29kbsbHDzSvTT6Q51t0hui_UhSon6njsHCKtWNxKPwvaXxp0qaMDKB/w1280-h720-p-k-no-nu/meta-image.png">
+<meta name="twitter:image:alt" content="The Point Da Nang Villa at BRG Golf Resort">
+<meta name="twitter:image:width" content="1280">
+<meta name="twitter:image:height" content="720">
+
+
 <style>
 :root {{
     --bg: #f2f5f8;
@@ -477,7 +510,7 @@ footer a:hover {{ text-decoration: underline; }}
 </main>
 
 <footer>
-    <p><a href="./feed.xml">Subscribe via RSS</a></p>
+    
     <p>Original articles by Point Booking</p>
 </footer>
 
