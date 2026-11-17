@@ -132,11 +132,10 @@ def fetch_rss():
     return list(unique.values())[:MAX_ITEMS]
 
 
-
 def generate_html(items):
     cards = []
 
-    for index, item in enumerate(items):
+    for item in items:
         title = html.escape(item["title"])
         link = html.escape(item["link"], quote=True)
         description = html.escape(item["description"])
@@ -145,669 +144,322 @@ def generate_html(items):
 
         image_html = (
             f'<img src="{image}" alt="{title}" loading="lazy">'
-            if image else '<div class="post-placeholder">POINT BOOKING</div>'
+            if image else ""
         )
 
-        featured = " featured" if index == 0 else ""
-
         cards.append(f"""
-        <article class="post{featured}">
-            <a class="post-image" href="{link}" target="_blank" rel="noopener">
-                {image_html}
-            </a>
-
+        <article class="post">
+            {image_html}
             <div class="post-content">
-                <span class="post-category">
-                    {"FEATURED ARTICLE" if index == 0 else "TRAVEL & DISCOVER"}
-                </span>
-
                 <p class="date">{pub_date}</p>
-
-                <h2>
-                    <a href="{link}" target="_blank" rel="noopener">
-                        {title}
-                    </a>
-                </h2>
-
-                <p class="description">{description}</p>
-
-                <a class="read-more" href="{link}"
-                   target="_blank" rel="noopener">
-                    Read Article <span>↗</span>
+                <h2><a href="{link}" target="_blank" rel="noopener">{title}</a></h2>
+                <p>{description}</p>
+                <a class="read-more" href="{link}" target="_blank" rel="noopener">
+                    Read article →
                 </a>
             </div>
         </article>
         """)
 
-    updated = datetime.now(timezone.utc).strftime("%d %b %Y · %H:%M UTC")
+    updated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-    return f"""<!DOCTYPE html>
-<html lang="en">
+ return f"""<!DOCTYPE html>
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>{html.escape(SITE_TITLE)}</title>
-
 <meta name="description" content="{html.escape(SITE_DESCRIPTION)}">
 <meta name="robots" content="index,follow">
-
 <link rel="alternate" type="application/rss+xml"
       title="Point Booking RSS" href="./feed.xml">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
-      rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-    --navy: #102b3b;
-    --gold: #c49a60;
-    --cream: #f7f6f2;
-    --white: #ffffff;
-    --text: #253440;
-    --muted: #84909a;
-    --border: #e9e8e3;
-}
-
-* {
-    box-sizing: border-box;
+:root {{
+    --bg: #f2f5f8;
+    --surface: #ffffff;
+    --ink: #10242f;
+    --muted: #64768a;
+    --line: #e2e8ee;
+    --brand: #0b3a55;
+    --brand-2: #0f6b8f;
+    --accent: #f08a24;
+    --accent-ink: #b45f0c;
+    --shadow: 0 1px 2px rgba(16,36,47,.06), 0 8px 24px rgba(16,36,47,.06);
+    --shadow-hover: 0 2px 4px rgba(16,36,47,.08), 0 16px 36px rgba(16,36,47,.12);
+}}
+@media (prefers-color-scheme: dark) {{
+    :root {{
+        --bg: #0b1520;
+        --surface: #12202e;
+        --ink: #e8eff5;
+        --muted: #8ea2b4;
+        --line: #1f3244;
+        --accent-ink: #ffa94d;
+        --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+        --shadow-hover: 0 2px 4px rgba(0,0,0,.5), 0 16px 36px rgba(0,0,0,.45);
+    }}
+}}
+* {{ box-sizing: border-box; }}
+html {{ scroll-behavior: smooth; }}
+body {{
     margin: 0;
-    padding: 0;
-}
+    font-family: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}}
+a {{ color: inherit; }}
+:focus-visible {{ outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }}
 
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    line-height: 1.7;
-}
-
-/* HEADER */
-
-.topbar {
-    background: var(--navy);
-    color: white;
-    padding: 13px 5%;
-}
-
-.topbar-inner {
-    max-width: 1240px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-}
-
-.brand {
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: white;
-    text-decoration: none;
-}
-
-.brand span {
-    color: var(--gold);
-}
-
-.top-nav {
-    display: flex;
-    gap: 25px;
-    align-items: center;
-}
-
-.top-nav a {
-    color: #d8e0e5;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.top-nav a:hover {
-    color: var(--gold);
-}
-
-/* HERO */
-
-.hero {
+/* ---------- Header ---------- */
+.hero {{
     background:
-        linear-gradient(120deg, rgba(9,32,46,.97), rgba(16,43,59,.85)),
-        radial-gradient(circle at 80% 30%, #54717c, #102b3b);
-    color: white;
-    padding: 85px 20px 90px;
-    text-align: center;
-}
-
-.hero-inner {
-    max-width: 850px;
-    margin: auto;
-}
-
-.hero-label {
-    color: var(--gold);
-    font-size: 11px;
+        radial-gradient(900px 300px at 85% -10%, rgba(240,138,36,.28), transparent 60%),
+        linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    color: #fff;
+    padding: 64px 20px 110px;
+}}
+.hero-inner {{ max-width: 1120px; margin: 0 auto; }}
+.hero h1 {{
+    margin: 0 0 14px;
+    font-size: clamp(32px, 5.5vw, 56px);
     font-weight: 800;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-}
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 18ch;
+}}
+.hero p {{
+    margin: 0;
+    max-width: 56ch;
+    font-size: clamp(16px, 2vw, 19px);
+    color: rgba(255,255,255,.82);
+}}
 
-.hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(36px, 6vw, 65px);
-    font-weight: 600;
-    line-height: 1.2;
-    margin-bottom: 20px;
-}
+/* ---------- Search ---------- */
+.search-wrap {{
+    max-width: 1120px;
+    margin: -34px auto 0;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+}}
+.search-box {{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 0 18px;
+    box-shadow: var(--shadow-hover);
+}}
+.search-box svg {{ flex: none; color: var(--muted); }}
+.search {{
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 17px;
+    padding: 18px 0;
+}}
+.search:focus {{ outline: none; }}
+.search-box:focus-within {{ border-color: var(--accent); box-shadow: 0 0 0 4px rgba(240,138,36,.2), var(--shadow-hover); }}
+.search::placeholder {{ color: var(--muted); }}
 
-.hero h1 span {
-    color: #d5b17e;
-}
-
-.hero-description {
-    color: #d2dce1;
-    max-width: 600px;
-    margin: auto;
-    font-size: 15px;
-}
-
-.hero-divider {
-    width: 55px;
-    height: 2px;
-    background: var(--gold);
-    margin: 30px auto 0;
-}
-
-/* MAIN */
-
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 65px 25px 85px;
-}
-
-.section-heading {
+/* ---------- Layout ---------- */
+.container {{ max-width: 1120px; margin: 0 auto; padding: 28px 20px 60px; }}
+.meta-row {{
     display: flex;
     justify-content: space-between;
-    align-items: end;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.section-label {
-    color: var(--gold);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-}
-
-.section-heading h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 34px;
-    font-weight: 600;
-    color: var(--navy);
-}
-
-.article-count {
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 22px;
     color: var(--muted);
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-/* SEARCH */
-
-.search-wrap {
-    position: relative;
-    margin-bottom: 35px;
-}
-
-.search-wrap input {
-    width: 100%;
-    padding: 17px 20px 17px 50px;
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    background: white;
-    font-family: inherit;
     font-size: 14px;
-    outline: none;
-    transition: .25s;
-}
+}}
+.meta-row strong {{ color: var(--ink); }}
 
-.search-wrap input:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(196,154,96,.12);
-}
-
-.search-icon {
-    position: absolute;
-    left: 19px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    font-size: 19px;
-}
-
-/* ARTICLE GRID */
-
-.posts-grid {
+.posts {{
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px;
-}
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}}
 
-.post {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 7px;
+/* ---------- Cards ---------- */
+.post {{
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
     overflow: hidden;
-    transition: transform .3s, box-shadow .3s;
-    min-width: 0;
-}
-
-.post:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(16,43,59,.09);
-}
-
-.post-image {
-    display: block;
-    width: 100%;
-    height: 230px;
-    overflow: hidden;
-    background: #e9eceb;
-}
-
-.post-image img {
-    display: block;
+    box-shadow: var(--shadow);
+    transition: transform .25s ease, box-shadow .25s ease;
+}}
+.post:hover {{ transform: translateY(-4px); box-shadow: var(--shadow-hover); }}
+.thumb {{ display: block; aspect-ratio: 16 / 10; overflow: hidden; background: var(--line); }}
+.thumb img, .thumb-fallback {{
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform .6s;
-}
-
-.post:hover .post-image img {
-    transform: scale(1.05);
-}
-
-.post-placeholder {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    place-items: center;
-    background: var(--navy);
-    color: var(--gold);
-    letter-spacing: 3px;
-    font-weight: 800;
-}
-
-.post-content {
-    padding: 25px 27px 28px;
-}
-
-.post-category {
-    display: inline-block;
-    color: var(--gold);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    margin-bottom: 10px;
-}
-
-.date {
+    display: block;
+    transition: transform .5s ease;
+}}
+.thumb-fallback {{ background: linear-gradient(135deg, var(--brand), var(--brand-2)); }}
+.post:hover .thumb img {{ transform: scale(1.05); }}
+.post-content {{ display: flex; flex-direction: column; flex: 1; padding: 20px 22px 22px; min-width: 0; }}
+.date {{ color: var(--muted); font-size: 13px; }}
+.post h2 {{
+    margin: 6px 0 10px;
+    font-size: 19px;
+    line-height: 1.35;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}}
+.post h2 a {{ text-decoration: none; }}
+.post h2 a:hover {{ color: var(--brand-2); }}
+.summary {{
+    margin: 0 0 16px;
     color: var(--muted);
-    font-size: 11px;
-    margin-bottom: 9px;
-}
-
-.post h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 23px;
+    font-size: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}}
+.read-more {{
+    margin-top: auto;
+    align-self: flex-start;
+    color: var(--accent-ink);
     font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 13px;
-}
-
-.post h2 a {
-    color: var(--navy);
-    text-decoration: none;
-}
-
-.post h2 a:hover {
-    color: #b58951;
-}
-
-.description {
-    font-size: 13px;
-    color: #77828a;
-    line-height: 1.8;
-    margin-bottom: 20px;
-}
-
-.read-more {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    color: var(--navy);
-    text-decoration: none;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.read-more span {
-    color: var(--gold);
-    font-size: 17px;
-    transition: transform .2s;
-}
-
-.read-more:hover span {
-    transform: translate(3px, -3px);
-}
-
-/* FEATURED ARTICLE */
-
-.post.featured {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    min-height: 350px;
-}
-
-.post.featured .post-image {
-    height: 100%;
-    min-height: 350px;
-}
-
-.post.featured .post-content {
-    align-self: center;
-    padding: 40px;
-}
-
-.post.featured h2 {
-    font-size: clamp(25px, 3vw, 34px);
-}
-
-.post.featured .description {
     font-size: 14px;
-}
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}}
+.read-more:hover {{ border-bottom-color: currentColor; }}
 
-/* NO RESULTS */
+/* Bài đầu tiên nổi bật (chỉ khi chưa tìm kiếm) */
+.posts.idle .post:first-child {{
+    grid-column: 1 / -1;
+    flex-direction: row;
+}}
+.posts.idle .post:first-child .thumb {{ flex: 1.2; aspect-ratio: auto; min-height: 320px; }}
+.posts.idle .post:first-child .post-content {{ flex: 1; justify-content: center; padding: 36px; }}
+.posts.idle .post:first-child h2 {{ font-size: clamp(24px, 3vw, 32px); line-height: 1.2; }}
+.posts.idle .post:first-child .summary {{ font-size: 16px; -webkit-line-clamp: 4; }}
 
-.no-results {
+.empty {{
     display: none;
     text-align: center;
-    padding: 50px 15px;
+    padding: 60px 20px;
     color: var(--muted);
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-}
+}}
+.empty strong {{ display: block; color: var(--ink); font-size: 18px; margin-bottom: 6px; }}
 
-/* FOOTER */
-
-footer {
-    background: var(--navy);
-    color: #cbd5db;
-    padding: 55px 20px 30px;
+/* ---------- Footer ---------- */
+footer {{
+    border-top: 1px solid var(--line);
+    padding: 32px 20px 44px;
     text-align: center;
-}
+    color: var(--muted);
+    font-size: 14px;
+}}
+footer p {{ margin: 4px 0; }}
+footer a {{ color: var(--accent-ink); font-weight: 600; text-decoration: none; }}
+footer a:hover {{ text-decoration: underline; }}
 
-.footer-brand {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    color: white;
-    margin-bottom: 10px;
-}
-
-.footer-brand span {
-    color: var(--gold);
-}
-
-footer p {
-    font-size: 12px;
-    margin-bottom: 12px;
-}
-
-.footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    flex-wrap: wrap;
-    margin: 25px 0;
-}
-
-.footer-links a {
-    color: #d8c19e;
-    text-decoration: none;
-    font-size: 12px;
-}
-
-.footer-bottom {
-    border-top: 1px solid rgba(255,255,255,.12);
-    padding-top: 22px;
-    margin-top: 25px;
-    color: #91a1aa;
-    font-size: 11px;
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 768px) {
-    .hero {
-        padding: 65px 20px;
-    }
-
-    .container {
-        padding: 45px 18px 60px;
-    }
-
-    .posts-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .post.featured {
-        grid-column: auto;
-        grid-template-columns: 1fr;
-    }
-
-    .post.featured .post-image {
-        min-height: 230px;
-        height: 230px;
-    }
-
-    .post.featured .post-content {
-        padding: 25px;
-    }
-
-    .post.featured h2 {
-        font-size: 25px;
-    }
-
-    .section-heading h2 {
-        font-size: 28px;
-    }
-
-    .top-nav {
-        gap: 12px;
-    }
-
-    .top-nav a {
-        font-size: 10px;
-    }
-}
-
-@media (max-width: 420px) {
-    .topbar {
-        padding: 13px 15px;
-    }
-
-    .brand {
-        font-size: 14px;
-    }
-
-    .top-nav a {
-        font-size: 9px;
-    }
-
-    .hero h1 {
-        font-size: 37px;
-    }
-
-    .section-heading {
-        align-items: start;
-        flex-direction: column;
-    }
-
-    .post-content {
-        padding: 22px;
-    }
-
-    .post h2 {
-        font-size: 21px;
-    }
-}
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {{
+    .posts {{ grid-template-columns: repeat(2, 1fr); }}
+}}
+@media (max-width: 640px) {{
+    .hero {{ padding: 44px 18px 96px; }}
+    .posts {{ grid-template-columns: 1fr; gap: 18px; }}
+    .posts.idle .post:first-child {{ flex-direction: column; }}
+    .posts.idle .post:first-child .thumb {{ min-height: 0; aspect-ratio: 16 / 10; flex: none; }}
+    .posts.idle .post:first-child .post-content {{ padding: 20px 22px 22px; }}
+}}
+@media (prefers-reduced-motion: reduce) {{
+    * {{ transition: none !important; scroll-behavior: auto !important; }}
+}}
 </style>
 </head>
-
 <body>
-
-<!-- HEADER -->
-
-<div class="topbar">
-    <div class="topbar-inner">
-        <a href="./" class="brand">
-            POINT<span>BOOKING</span>
-        </a>
-
-        <nav class="top-nav">
-            <a href="./">Home</a>
-            <a href="#articles">Articles</a>
-            <a href="./feed.xml">RSS Feed ↗</a>
-        </nav>
-    </div>
-</div>
-
-<!-- HERO -->
-
 <header class="hero">
     <div class="hero-inner">
-        <p class="hero-label">Travel · Explore · Discover</p>
-
-        <h1>
-            Discover the World<br>
-            <span>One Journey at a Time.</span>
-        </h1>
-
-        <p class="hero-description">
-            Discover inspiring travel stories, beautiful destinations
-            and unforgettable experiences with Point Booking.
-        </p>
-
-        <div class="hero-divider"></div>
+        <h1>{html.escape(SITE_TITLE)}</h1>
+        <p>{html.escape(SITE_DESCRIPTION)}</p>
     </div>
 </header>
 
-<!-- MAIN CONTENT -->
+<div class="search-wrap">
+    <label class="search-box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <span class="sr-only" style="position:absolute;left:-9999px">Tìm bài viết</span>
+        <input class="search" id="search" type="search" autocomplete="off"
+               placeholder="Tìm bài viết theo tiêu đề hoặc nội dung">
+    </label>
+</div>
 
-<main class="container" id="articles">
-
-    <div class="section-heading">
-        <div>
-            <p class="section-label">Our Journal</p>
-            <h2>Latest Stories</h2>
-        </div>
-
-        <p class="article-count">
-            {len(items)} Articles · Updated {updated}
-        </p>
+<main class="container">
+    <div class="meta-row">
+        <span id="count"><strong>{len(items)}</strong> bài viết mới nhất</span>
+        <span>Cập nhật: {updated}</span>
     </div>
-
-    <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input
-            type="search"
-            id="search"
-            placeholder="Search destinations, stories and articles..."
-            aria-label="Search articles">
-    </div>
-
-    <section class="posts-grid" id="posts">
+    <section class="posts idle" id="posts">
         {''.join(cards)}
     </section>
-
-    <div class="no-results" id="noResults">
-        <h3>No articles found</h3>
-        <p>Try another keyword to discover more stories.</p>
+    <div class="empty" id="empty">
+        <strong>Không tìm thấy bài viết nào</strong>
+        Thử từ khóa ngắn hơn hoặc kiểm tra lại chính tả.
     </div>
-
 </main>
 
-<!-- FOOTER -->
-
 <footer>
-    <div class="footer-brand">
-        POINT<span>BOOKING</span>
-    </div>
-
-    <p>
-        Discover beautiful destinations and inspiring travel stories.
-    </p>
-
-    <div class="footer-links">
-        <a href="./">Home</a>
-        <a href="#articles">Latest Articles</a>
-        <a href="./feed.xml">RSS Feed</a>
-        <a href="https://www.pointbookingofficial.com/"
-           target="_blank" rel="noopener">
-            Official Website ↗
-        </a>
-    </div>
-
-    <div class="footer-bottom">
-        <p>Last synchronized: {updated}</p>
-        <p>© {datetime.now(timezone.utc).year} Point Booking. All rights reserved.</p>
-    </div>
+    <p><a href="./feed.xml">Đăng ký RSS</a></p>
+    <p>Bài viết gốc của Point Booking</p>
 </footer>
 
-<!-- SEARCH SCRIPT -->
-
 <script>
-(function() {
-    const search = document.getElementById("search");
-    const posts = document.querySelectorAll(".post");
-    const noResults = document.getElementById("noResults");
+(function() {{
+    const input = document.getElementById("search");
+    const posts = document.getElementById("posts");
+    const empty = document.getElementById("empty");
+    const count = document.getElementById("count");
+    const cards = Array.from(posts.querySelectorAll(".post"));
+    const total = cards.length;
 
-    search.addEventListener("input", function() {
-        const query = this.value.toLowerCase().trim();
-        let visible = 0;
+    function normalize(s) {{
+        return s.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/đ/g, "d");
+    }}
+    const index = cards.map(c => normalize(c.innerText));
 
-        posts.forEach(function(post) {
-            const match = post.innerText.toLowerCase().includes(query);
-
-            post.style.display = match ? "" : "none";
-
-            if (match) visible++;
-        });
-
-        noResults.style.display = visible === 0 ? "block" : "none";
-    });
-})();
+    input.addEventListener("input", function() {{
+        const q = normalize(this.value.trim());
+        let shown = 0;
+        cards.forEach((card, i) => {{
+            const match = !q || index[i].includes(q);
+            card.style.display = match ? "" : "none";
+            if (match) shown++;
+        }});
+        posts.classList.toggle("idle", !q);
+        empty.style.display = shown ? "none" : "block";
+        count.innerHTML = q
+            ? "<strong>" + shown + "</strong> kết quả"
+            : "<strong>" + total + "</strong> bài viết mới nhất";
+    }});
+}})();
 </script>
-
 </body>
 </html>"""
 
