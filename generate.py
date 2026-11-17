@@ -238,6 +238,8 @@ def generate_html(items):
 <link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w96-h96-p-k-no-nu/favicon-96x96.png' rel='icon' sizes='96x96' type='image/png'/>
 <link href='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiG_tLkYRR_2z-NIhrdCzrQMZroJicp91rgNwqy-mGmx0_VCR_Okjwc-4QOUtFFDFVxIORjYBpxmLTCieZje1WPqpsCB8HYX2QD-0TaiMl4SU1N4Y9ucgoRA8kN-ymuagmRvzx0cQzhKl5gMXOfjvzMeuedFnnZilJEb4DbH0xMi_YJIn_MVHgjYMzjSyXu/w192-h192-p-k-no-nu/favicon-96x96.png' rel='icon' sizes='192x192' type='image/png'/>
 <meta name="google-site-verification" content="bJxp2sUJpg6xYiP4iKCx1lrVhShclRgFq_LDPAol3d0">
+<meta name="yandex-verification" content="a6ffcfd1660beece" />
+<meta name="msvalidate.01" content="F5D027AB5C3BECB99BC9B93916923972" />
 <link rel="alternate" type="application/rss+xml"
       title="Point Booking RSS"
       href="https://pointbookingofficial.github.io/pointbookingofficial-rss/feed.xml">
