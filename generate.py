@@ -43,25 +43,17 @@ def clean_html(value):
         return value or ""
 
 
-def enlarge_thumbnail(url):
-    """Blogger thumbnails are tiny (s72-c). Request a larger version."""
-    return re.sub(r"/s\d+(-c)?/", "/s640/", url)
+def enlarge_image(url):
+    """Ask Blogger/Google for a large version of an image."""
+    url = re.sub(r"/s\d+(-[a-z]+)*/", "/s1200/", url)
+    url = re.sub(r"/w\d+-h\d+(-[a-z]+)*/", "/s1200/", url)
+    url = re.sub(r"=s\d+(-[a-z]+)*$", "=s1200", url)
+    url = re.sub(r"=w\d+-h\d+(-[a-z]+)*$", "=s1200", url)
+    return url
 
 
 def get_image(item):
-    # Blogger media:thumbnail
-    for element in item.iter():
-        if element.tag.endswith("thumbnail"):
-            url = element.attrib.get("url")
-            if url:
-                return enlarge_thumbnail(url)
-
-    # RSS enclosure
-    for element in item.findall("enclosure"):
-        if element.attrib.get("type", "").startswith("image/"):
-            return element.attrib.get("url", "")
-
-    # Image embedded in description/content
+    # 1. Image embedded in the post content (usually full size)
     for element in item.iter():
         if element.tag.endswith(("encoded", "description")):
             content = element.text or ""
@@ -71,10 +63,21 @@ def get_image(item):
                 re.IGNORECASE
             )
             if match:
-                return enlarge_thumbnail(match.group(1))
+                return enlarge_image(match.group(1))
+
+    # 2. RSS enclosure
+    for element in item.findall("enclosure"):
+        if element.attrib.get("type", "").startswith("image/"):
+            return enlarge_image(element.attrib.get("url", ""))
+
+    # 3. Blogger media:thumbnail (tiny, last resort)
+    for element in item.iter():
+        if element.tag.endswith("thumbnail"):
+            url = element.attrib.get("url")
+            if url:
+                return enlarge_image(url)
 
     return ""
-
 
 def get_text(item, tag):
     element = item.find(tag)
