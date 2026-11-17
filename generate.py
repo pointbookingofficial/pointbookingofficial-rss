@@ -162,8 +162,8 @@ def generate_html(items):
         """)
 
     updated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-
- return f"""<!DOCTYPE html>
+    
+return f"""<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
