@@ -229,8 +229,8 @@ def generate_html(items):
 
 <meta name="robots" content="index,follow">
 
-<link rel="icon" type="image/png" href="./Point 180x180.png">
-<link rel="shortcut icon" href="./Point 180x180.png">
+<link rel="icon" type="image/png" href="./public/Point%20180x180.png">
+<link rel="shortcut icon" type="image/png" href="./public/Point%20180x180.png">
 
 <meta name="google-site-verification" content="bJxp2sUJpg6xYiP4iKCx1lrVhShclRgFq_LDPAol3d0">
 
