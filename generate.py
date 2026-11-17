@@ -1,14 +1,16 @@
-
 import urllib.request
 import xml.etree.ElementTree as ET
 import html
 import re
 import os
 from datetime import datetime, timezone
-from email.utils import format_datetime
+from email.utils import format_datetime, parsedate_to_datetime
 from html.parser import HTMLParser
 
-RSS_URL = "https://www.pointbookingofficial.com/feeds/posts/default?alt=rss&max-results=100"
+FEED_BASE = "https://www.pointbookingofficial.com/feeds/posts/default?alt=rss"
+PAGE_SIZE = 50
+OPENSEARCH = "{http://a9.com/-/spec/opensearch/1.1/}"
+
 SITE_TITLE = "Point Booking - Latest Articles"
 SITE_DESCRIPTION = "Latest travel articles from Point Booking."
 SITE_URL = os.environ.get(
@@ -17,7 +19,7 @@ SITE_URL = os.environ.get(
 )
 
 OUTPUT_DIR = "public"
-MAX_ITEMS = 100
+MAX_ITEMS = 200
 
 
 class TextExtractor(HTMLParser):
@@ -41,13 +43,18 @@ def clean_html(value):
         return value or ""
 
 
+def enlarge_thumbnail(url):
+    """Blogger thumbnails are tiny (s72-c). Request a larger version."""
+    return re.sub(r"/s\d+(-c)?/", "/s640/", url)
+
+
 def get_image(item):
     # Blogger media:thumbnail
     for element in item.iter():
         if element.tag.endswith("thumbnail"):
             url = element.attrib.get("url")
             if url:
-                return url
+                return enlarge_thumbnail(url)
 
     # RSS enclosure
     for element in item.findall("enclosure"):
@@ -64,7 +71,7 @@ def get_image(item):
                 re.IGNORECASE
             )
             if match:
-                return match.group(1)
+                return enlarge_thumbnail(match.group(1))
 
     return ""
 
@@ -74,60 +81,70 @@ def get_text(item, tag):
     return element.text.strip() if element is not None and element.text else ""
 
 
-def fetch_rss():
+def format_date(value):
+    try:
+        return parsedate_to_datetime(value).strftime("%b %d, %Y")
+    except Exception:
+        return value or ""
+
+
+def fetch_xml(url):
     request = urllib.request.Request(
-        RSS_URL,
+        url,
         headers={"User-Agent": "PointBookingRSSBot/1.0"}
     )
-
     with urllib.request.urlopen(request, timeout=30) as response:
-        data = response.read()
+        return ET.fromstring(response.read())
 
-    root = ET.fromstring(data)
+
+def fetch_rss():
     items = []
+    skipped = 0
+    start = 1
+    total = None
 
-    # RSS 2.0
-    for item in root.findall(".//item"):
-        title = get_text(item, "title")
-        link = get_text(item, "link")
-        description = get_text(item, "description")
-        pub_date = get_text(item, "pubDate")
+    while True:
+        root = fetch_xml(
+            f"{FEED_BASE}&max-results={PAGE_SIZE}&start-index={start}"
+        )
 
-        if not title or not link:
-            continue
+        if total is None:
+            total = int(root.findtext(f".//{OPENSEARCH}totalResults") or 0)
+            print(f"Blogger reports {total} posts in total.")
 
-        items.append({
-            "title": title,
-            "link": link,
-            "description": clean_html(description)[:500],
-            "pub_date": pub_date,
-            "image": get_image(item)
-        })
+        raw_items = root.findall(".//item")
+        if not raw_items:
+            break
 
-    # Atom fallback
-    if not items:
-        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        for item in raw_items:
+            title = get_text(item, "title")
+            link = get_text(item, "link")
 
-        for entry in root.findall(".//atom:entry", ns):
-            title = entry.findtext("atom:title", default="", namespaces=ns)
-            link_element = entry.find("atom:link", ns)
-            link = link_element.attrib.get("href", "") if link_element is not None else ""
-            summary = entry.findtext("atom:summary", default="", namespaces=ns)
-            published = entry.findtext("atom:published", default="", namespaces=ns)
+            if not title or not link:
+                skipped += 1
+                continue
 
-            if title and link:
-                items.append({
-                    "title": title,
-                    "link": link,
-                    "description": clean_html(summary)[:500],
-                    "pub_date": published,
-                    "image": get_image(entry)
-                })
+            items.append({
+                "title": title,
+                "link": link,
+                "description": clean_html(get_text(item, "description"))[:500],
+                "pub_date": get_text(item, "pubDate"),
+                "image": get_image(item),
+            })
 
-    # Remove duplicate URLs
+        start += len(raw_items)
+        if total and start > total:
+            break
+
+    # Remove duplicate URLs (keeps feed order, newest first)
     unique = {}
     for item in items:
         unique[item["link"]] = item
+
+    print(
+        f"Read {len(items)} posts, skipped {skipped} without title/link, "
+        f"{len(unique)} left after removing duplicates."
+    )
 
     return list(unique.values())[:MAX_ITEMS]
 
@@ -139,7 +156,7 @@ def generate_html(items):
         title = html.escape(item["title"])
         link = html.escape(item["link"], quote=True)
         description = html.escape(item["description"])
-        pub_date = html.escape(item["pub_date"])
+        pub_date = html.escape(format_date(item["pub_date"]))
         image = html.escape(item["image"], quote=True)
 
         image_html = (
@@ -156,15 +173,15 @@ def generate_html(items):
                 <time class="date">{pub_date}</time>
                 <h2><a href="{link}" target="_blank" rel="noopener">{title}</a></h2>
                 <p class="summary">{description}</p>
-                <a class="read-more" href="{link}" target="_blank" rel="noopener">Đọc tiếp</a>
+                <a class="read-more" href="{link}" target="_blank" rel="noopener">Read article</a>
             </div>
         </article>
         """)
 
     updated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    
+
     return f"""<!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -345,7 +362,7 @@ a {{ color: inherit; }}
 }}
 .read-more:hover {{ border-bottom-color: currentColor; }}
 
-/* Bài đầu tiên nổi bật (chỉ khi chưa tìm kiếm) */
+/* Featured first post (only while not searching) */
 .posts.idle .post:first-child {{
     grid-column: 1 / -1;
     flex-direction: row;
@@ -405,29 +422,29 @@ footer a:hover {{ text-decoration: underline; }}
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
         </svg>
-        <span class="sr-only" style="position:absolute;left:-9999px">Tìm bài viết</span>
+        <span style="position:absolute;left:-9999px">Search articles</span>
         <input class="search" id="search" type="search" autocomplete="off"
-               placeholder="Tìm bài viết theo tiêu đề hoặc nội dung">
+               placeholder="Search articles by title or content">
     </label>
 </div>
 
 <main class="container">
     <div class="meta-row">
-        <span id="count"><strong>{len(items)}</strong> bài viết mới nhất</span>
-        <span>Cập nhật: {updated}</span>
+        <span id="count"><strong>{len(items)}</strong> latest articles</span>
+        <span>Last updated: {updated}</span>
     </div>
     <section class="posts idle" id="posts">
         {''.join(cards)}
     </section>
     <div class="empty" id="empty">
-        <strong>Không tìm thấy bài viết nào</strong>
-        Thử từ khóa ngắn hơn hoặc kiểm tra lại chính tả.
+        <strong>No articles found</strong>
+        Try a shorter keyword or check your spelling.
     </div>
 </main>
 
 <footer>
-    <p><a href="./feed.xml">Đăng ký RSS</a></p>
-    <p>Bài viết gốc của Point Booking</p>
+    <p><a href="./feed.xml">Subscribe via RSS</a></p>
+    <p>Original articles by Point Booking</p>
 </footer>
 
 <script>
@@ -455,8 +472,8 @@ footer a:hover {{ text-decoration: underline; }}
         posts.classList.toggle("idle", !q);
         empty.style.display = shown ? "none" : "block";
         count.innerHTML = q
-            ? "<strong>" + shown + "</strong> kết quả"
-            : "<strong>" + total + "</strong> bài viết mới nhất";
+            ? "<strong>" + shown + "</strong> " + (shown === 1 ? "result" : "results")
+            : "<strong>" + total + "</strong> latest articles";
     }});
 }})();
 </script>
